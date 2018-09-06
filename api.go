@@ -52,7 +52,7 @@ const (
 	PCTournament = "pc-tournament"
 )
 
-func (c *Client) newRequest(method, path string, body interface{}, options interface{}) (*http.Request, error) {
+func (c *Client) newRequest(method string, path string, body interface{}, options interface{}) (*http.Request, error) {
 	rel := &url.URL{Path: path}
 	u := c.baseURL.ResolveReference(rel)
 
@@ -120,8 +120,8 @@ func (c *Client) GetStatus() (*StatusResponse, error) {
 }
 
 // GetPlayer retrieves player data.
-func (c *Client) GetPlayer(id, shard string) (*PlayerResponse, error) {
-	req, err := c.newRequest("GET", fmt.Sprintf("%s/%s/%s/%s", shards, shard, players, id), nil, nil)
+func (c *Client) GetPlayer(playerID string, shardID string) (*PlayerResponse, error) {
+	req, err := c.newRequest("GET", fmt.Sprintf("%s/%s/%s/%s", shards, shardID, players, playerID), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -132,8 +132,8 @@ func (c *Client) GetPlayer(id, shard string) (*PlayerResponse, error) {
 }
 
 // GetPlayers retrieves data for players from the passed options.
-func (c *Client) GetPlayers(options GetPlayersRequestOptions, shard string) (*PlayersResponse, error) {
-	req, err := c.newRequest("GET", fmt.Sprintf("%s/%s/%s", shards, shard, players), nil, options)
+func (c *Client) GetPlayers(options GetPlayersRequestOptions, shardID string) (*PlayersResponse, error) {
+	req, err := c.newRequest("GET", fmt.Sprintf("%s/%s/%s", shards, shardID, players), nil, options)
 	if err != nil {
 		return nil, err
 	}
@@ -144,9 +144,9 @@ func (c *Client) GetPlayers(options GetPlayersRequestOptions, shard string) (*Pl
 }
 
 // GetSeasons retrieves data about seasons in a shard
-func (c *Client) GetSeasons(shard string) (*SeasonsResponse, error) {
+func (c *Client) GetSeasons(shardID string) (*SeasonsResponse, error) {
 	req, err := c.newRequest("GET",
-		fmt.Sprintf("%s/%s/%s", shards, shard, seasons),
+		fmt.Sprintf("%s/%s/%s", shards, shardID, seasons),
 		nil, nil,
 	)
 	if err != nil {
@@ -158,9 +158,9 @@ func (c *Client) GetSeasons(shard string) (*SeasonsResponse, error) {
 }
 
 // GetSeasonStats retrieves data about a season
-func (c *Client) GetSeasonStats(playerID string, shard string, season string) (*PlayerSeasonResponse, error) {
+func (c *Client) GetSeasonStats(playerID string, shardID string, seasonID string) (*PlayerSeasonResponse, error) {
 	req, err := c.newRequest("GET",
-		fmt.Sprintf("%s/%s/%s/%s/%s/%s", shards, shard, players, playerID, seasons, season),
+		fmt.Sprintf("%s/%s/%s/%s/%s/%s", shards, shardID, players, playerID, seasons, seasonID),
 		nil, nil,
 	)
 	if err != nil {
@@ -172,9 +172,9 @@ func (c *Client) GetSeasonStats(playerID string, shard string, season string) (*
 }
 
 // GetSampleMatches retrieves samples matches
-func (c *Client) GetSampleMatches(shard string) (*SamplesResponse, error) {
+func (c *Client) GetSampleMatches(shardID string) (*SamplesResponse, error) {
 	req, err := c.newRequest("GET",
-		fmt.Sprintf("%s/%s/%s", shards, shard, samples),
+		fmt.Sprintf("%s/%s/%s", shards, shardID, samples),
 		nil, nil,
 	)
 	if err != nil {
@@ -186,8 +186,8 @@ func (c *Client) GetSampleMatches(shard string) (*SamplesResponse, error) {
 }
 
 // GetMatch retrieves the data for a match with a given id and shard
-func (c *Client) GetMatch(id string, shard string) (*MatchResponse, error) {
-	req, err := c.newRequest("GET", fmt.Sprintf("%s/%s/%s/%s", shards, shard, matches, id), nil, nil)
+func (c *Client) GetMatch(matchID string, shardID string) (*MatchResponse, error) {
+	req, err := c.newRequest("GET", fmt.Sprintf("%s/%s/%s/%s", shards, shardID, matches, matchID), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +238,7 @@ func (c *Client) GetTelemetry(url string) (*TelemetryResponse, error) {
 
 	var buffer bytes.Buffer
 	buffer.ReadFrom(resp.Body)
-	return parseTelemetry(buffer.Bytes())
+	return ParseTelemetry(buffer.Bytes())
 }
 
 // ReadTelemetryFromFile parses json telemetry data from a given file
@@ -250,12 +250,12 @@ func ReadTelemetryFromFile(path string) (tr *TelemetryResponse, err error) {
 	if err != nil {
 		return
 	}
-	return parseTelemetry(b)
+	return ParseTelemetry(b)
 }
 
 // ParseTelemetry reads the telemetry event type from the json
 // and passes it to the unmarshaller
-func parseTelemetry(b []byte) (tr *TelemetryResponse, err error) {
+func ParseTelemetry(b []byte) (tr *TelemetryResponse, err error) {
 	var v []json.RawMessage
 	json.Unmarshal(b, &v)
 	for _, bts := range v {
