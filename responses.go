@@ -192,18 +192,19 @@ type MatchResponse struct {
 		Type       string `json:"type"`
 		ID         string `json:"id"`
 		Attributes struct {
-			CreatedAt    time.Time `json:"createdAt"`
-			Duration     int       `json:"duration"`
-			GameMode     string    `json:"gameMode"`
-			MapName      string    `json:"mapName"`
-			PatchVersion string    `json:"patchVersion"`
-			ShardID      string    `json:"shardId"`
-			Stats        string    `json:"stats"`
-			Tags         string    `json:"tags"`
-			TitleID      string    `json:"titleId"`
-			Description  string    `json:"description"`
-			Name         string    `json:"name"`
-			URL          string    `json:"URL"`
+			CreatedAt     time.Time `json:"createdAt"`
+			Duration      int       `json:"duration"`
+			GameMode      string    `json:"gameMode"`
+			MapName       string    `json:"mapName"`
+			PatchVersion  string    `json:"patchVersion"`
+			IsCustomMatch bool      `json:"isCustomMatch"`
+			ShardID       string    `json:"shardId"`
+			Stats         string    `json:"stats"`
+			Tags          string    `json:"tags"`
+			TitleID       string    `json:"titleId"`
+			Description   string    `json:"description"`
+			Name          string    `json:"name"`
+			URL           string    `json:"URL"`
 		} `json:"attributes"`
 		Relationships struct {
 			Assets struct {
